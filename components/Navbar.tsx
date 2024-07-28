@@ -7,24 +7,40 @@ import { RiCloseFill } from "react-icons/ri";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<string>(localStorage.getItem('theme') || 'light');
+  const [theme, setTheme] = useState<string>('light');
   
+  // Function to handle menu toggle
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Function to handle menu close
   const handleClose = () => {
     setIsMenuOpen(false);
   };
 
+  // Function to handle theme toggle
   const handleToggle = () => {
     setTheme(prevTheme => {
       const newTheme = prevTheme === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme', newTheme);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', newTheme);
+      }
       return newTheme;
     });
   };
 
+  // Use useEffect to sync theme with localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme) {
+        setTheme(storedTheme);
+      }
+    }
+  }, []);
+
+  // Use useEffect to apply the theme to the document
   useEffect(() => {
     const html = document.querySelector('html');
     if (theme === 'dark') {
@@ -39,13 +55,13 @@ const Navbar = () => {
   return (
     <nav className="w-full flex items-center justify-between h-[4rem] text-black bg-white dark:bg-[#08080C] dark:text-white px-4">
       {/* Navigation links */}
-      <div className="flex items-center justify-start gap-8"> {/* Increased gap */}
+      <div className="flex items-center justify-start gap-8">
         {navLinks.map((item) => (
           <a key={item.id} className="hidden sm:block">{item.title}</a>
         ))}
       </div>
 
-      {/* Small devices */}
+      {/* Small devices menu */}
       <div className="flex items-center bg-white dark:bg-[#08080C] dark:text-white gap-3 text-black sm:hidden">
         <button onClick={handleMenuToggle}>
           Menu
